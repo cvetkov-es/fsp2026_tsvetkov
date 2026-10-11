@@ -1,0 +1,565 @@
+erDiagram
+  audit_log {
+    biginteger id PK
+    uuid actor_id
+    string action
+    string object_type
+    string object_id
+    jsonb details
+    datetime at
+  }
+  companies {
+    uuid id PK
+    string name
+    text description
+    string industry
+    jsonb contacts
+    string domain
+    string inn
+    string legal_name
+    string trust_level
+    integer quota_penalty_slots
+    datetime quota_penalty_until
+  }
+  item_families {
+    string code PK
+    string specialization
+    string area
+    integer level
+    string fmt
+    float b
+    integer median_time_s
+    string status
+    integer exposure_count
+    datetime synced_at
+  }
+  lab_runs {
+    uuid id PK
+    string kind
+    integer population
+    string status
+    jsonb results
+    text error
+    datetime started_at
+    datetime finished_at
+  }
+  mock_ats_events {
+    biginteger id PK
+    uuid endpoint_id
+    string type
+    boolean valid
+    datetime received_at
+    text body
+  }
+  mock_fsp_codes {
+    string code PK
+    string subject
+    string client_id
+    string redirect_uri
+    string nonce
+    string code_challenge
+    string scope
+    datetime expires_at
+    datetime used_at
+  }
+  mock_fsp_keys {
+    string kid PK
+    text private_pem
+  }
+  oidc_pending {
+    string ticket PK
+    string subject
+    string email
+    boolean email_verified
+    string name
+    text access_token
+    datetime used_at
+  }
+  search_logs {
+    biginteger id PK
+    uuid need_id
+    uuid company_id
+    jsonb filters
+    datetime at
+  }
+  thresholds {
+    string version PK
+    float cut_j
+    float cut_m
+    float cut_s
+    float virtual_gap
+    string source
+  }
+  users {
+    uuid id PK
+    string email
+    string role
+    string password_hash
+    integer birth_year
+    date birth_date
+    boolean is_demo
+    datetime email_verified_at
+  }
+  attempts {
+    uuid id PK
+    uuid user_id FK
+    string kind
+    string specialization
+    string target_grade
+    boolean express
+    integer item_cap
+    boolean extra_time
+    string thresholds_version
+    string status
+    string decision
+    integer decided_at_n
+    boolean border
+    boolean confident
+    boolean bank_exhausted
+    float theta
+    float se
+    float p_confirm
+    float s
+    boolean synthetic
+    datetime started_at
+    datetime last_activity_at
+    datetime decided_at
+    datetime finished_at
+  }
+  candidate_profiles {
+    uuid user_id PK
+    string specialization
+    string guardian_email
+    datetime guardian_consent_at
+    string claimed_grade
+    string grade_status
+    string confirmed_grade
+    uuid status_attempt_id
+    float theta
+    float se
+    float s_cache
+    datetime grade_changed_at
+    datetime cooldown_reset_at
+    datetime last_activity_at
+    string public_ref
+    string full_name
+    jsonb contacts
+    float experience_years
+    array formats
+    string city
+    array domains
+    integer salary_threshold
+    string salary_gross_net
+    datetime open_until
+    string fsp_status
+    float fsp_f
+    string fsp_summary
+    float m
+    boolean synthetic
+  }
+  candidate_stack {
+    uuid user_id PK
+    string tech PK
+  }
+  cases {
+    uuid id PK
+    string type
+    jsonb refs
+    string status
+    uuid opened_by FK
+    text comment
+    string resolution
+    text resolution_text
+    uuid resolved_by FK
+    datetime resolved_at
+  }
+  company_members {
+    uuid company_id PK
+    uuid user_id PK
+  }
+  consents {
+    uuid id PK
+    uuid user_id FK
+    string type
+    string version
+    uuid target_company_id FK
+    jsonb scope
+    datetime granted_at
+    datetime revoked_at
+  }
+  email_tokens {
+    uuid id PK
+    uuid user_id FK
+    string purpose
+    string token_hash
+    datetime expires_at
+    datetime used_at
+  }
+  employer_tasks {
+    uuid id PK
+    uuid company_id FK
+    uuid author_user_id FK
+    string specialization
+    string title
+    text text
+    text reference_answer
+    string answer_kind
+    datetime deadline
+    string status
+  }
+  external_identities {
+    uuid id PK
+    uuid user_id FK
+    string provider
+    string issuer
+    string subject
+    datetime linked_at
+    datetime last_sync_at
+  }
+  fsp_ranks {
+    biginteger id PK
+    uuid user_id FK
+    string rank
+    date assigned_at
+    date valid_until
+  }
+  fsp_snapshots {
+    uuid id PK
+    uuid user_id FK
+    datetime fetched_at
+    string status
+    jsonb payload
+  }
+  needs {
+    uuid id PK
+    uuid company_id FK
+    string title
+    string specialization
+    array grades
+    array must
+    array nice
+    array formats
+    string city
+    integer salary_from
+    integer salary_to
+    string gross_net
+    string contact_method
+    text raw_text
+    string employment
+    string status
+  }
+  notifications {
+    biginteger id PK
+    uuid user_id FK
+    string kind
+    string dedupe_key
+    jsonb payload
+    datetime read_at
+    datetime emailed_at
+  }
+  oidc_states {
+    string state PK
+    string nonce
+    string code_verifier
+    string purpose
+    uuid user_id FK
+    datetime used_at
+  }
+  outbox {
+    biginteger id PK
+    uuid company_id FK
+    string event_type
+    jsonb payload
+    datetime processed_at
+  }
+  profile_company_blocks {
+    uuid user_id PK
+    uuid company_id PK
+  }
+  sessions {
+    uuid id PK
+    uuid user_id FK
+    string token_hash
+    datetime expires_at
+    datetime revoked_at
+    uuid impersonated_by FK
+  }
+  signals {
+    uuid id PK
+    uuid user_id FK
+    uuid company_id FK
+    datetime withdrawn_at
+  }
+  skill_results {
+    uuid id PK
+    uuid user_id FK
+    string skill_code
+    boolean passed
+    uuid attempt_id
+    jsonb metrics
+    datetime at
+  }
+  webhook_endpoints {
+    uuid id PK
+    uuid company_id FK
+    string url
+    string secret
+    boolean active
+  }
+  attempt_items {
+    uuid id PK
+    uuid attempt_id FK
+    integer seq
+    integer phase
+    string family_code
+    string area
+    integer level
+    float b
+    string seed
+    jsonb instance
+    integer time_limit_s
+    datetime presented_at
+    datetime answered_at
+    integer time_ms
+    jsonb response
+    boolean correct
+    boolean timed_out
+    jsonb events
+  }
+  explanations {
+    biginteger id PK
+    uuid need_id FK
+    uuid user_id FK
+    string facts_hash
+    text template_text
+    text llm_text
+    string model
+  }
+  fsp_results {
+    biginteger id PK
+    uuid user_id FK
+    uuid snapshot_id FK
+    string competition_id
+    string competition_title
+    string discipline
+    string stage_type
+    string level
+    date date
+    integer place
+    integer field_size
+    string team_id
+    string team_name
+    integer team_size
+    string tier
+    boolean counted
+    string note
+  }
+  group_invites {
+    uuid id PK
+    uuid company_id FK
+    uuid need_id FK
+    string team_id
+    string team_name
+    integer min_size
+    datetime deadline
+    datetime finalized_at
+    datetime withdrawn_at
+  }
+  selection_snapshots {
+    uuid need_id PK
+    jsonb refs
+    datetime at
+  }
+  shortlist {
+    uuid need_id PK
+    uuid user_id PK
+    datetime pinned_at
+  }
+  task_submissions {
+    uuid id PK
+    uuid task_id FK
+    uuid user_id FK
+    text answer
+    boolean auto_correct
+    string verdict
+    text comment
+    jsonb llm_hint
+    datetime evaluated_at
+  }
+  vacancies {
+    uuid id PK
+    uuid company_id FK
+    uuid need_id FK
+    string title
+    text description
+    string specialization
+    array grades
+    integer salary_from
+    integer salary_to
+    string gross_net
+    string city
+    array formats
+    string status
+  }
+  webhook_deliveries {
+    biginteger id PK
+    uuid endpoint_id FK
+    biginteger outbox_id FK
+    integer attempt
+    string status
+    integer status_code
+    string error
+    datetime next_attempt_at
+    datetime delivered_at
+  }
+  contacts {
+    uuid id PK
+    string channel
+    uuid group_id FK
+    uuid need_id FK
+    uuid company_id FK
+    uuid user_id FK
+    uuid vacancy_id FK
+    uuid task_submission_id FK
+    integer version
+    string status
+    integer salary_from
+    integer salary_to
+    string gross_net
+    text description
+    text why_you
+    text next_step
+    string contact_method
+    integer hours_per_week
+    datetime expires_at
+    integer counter_amount
+    text counter_comment
+    datetime counter_expires_at
+    string decline_reason
+    text decline_comment
+    boolean early_reinvite
+    datetime viewed_at
+    datetime contacts_revealed_at
+    datetime revoked_at
+  }
+  applications {
+    uuid id PK
+    uuid vacancy_id FK
+    uuid user_id FK
+    text message
+    string status
+    string decline_reason
+    uuid contact_id FK
+  }
+  contact_events {
+    biginteger id PK
+    uuid contact_id FK
+    string type
+    string actor
+    jsonb payload
+    datetime at
+  }
+  helper_uses {
+    uuid id PK
+    uuid company_id FK
+    uuid contact_id FK
+    jsonb questions
+    datetime at
+  }
+  messages {
+    biginteger id PK
+    uuid contact_id FK
+    uuid author_user_id FK
+    text text
+    datetime at
+  }
+  pipeline_stages {
+    biginteger id PK
+    uuid contact_id FK
+    string stage
+    string level
+    string reason
+    jsonb weak_areas
+    string vote_note
+    uuid actor_user_id FK
+    datetime at
+  }
+  votes {
+    uuid id PK
+    uuid contact_id FK
+    uuid company_id FK
+    uuid user_id FK
+    string value
+    string pending_value
+    float weight
+    string trust_at_vote
+    string spec_at_vote
+    string grade_at_vote
+    string status
+    datetime answered_at
+    datetime effective_at
+    string dispute_reason
+    text dispute_comment
+  }
+  users ||--o{ attempts : "user_id"
+  users ||--o{ candidate_profiles : "user_id"
+  users ||--o{ candidate_stack : "user_id"
+  users ||--o{ cases : "resolved_by"
+  users ||--o{ cases : "opened_by"
+  users ||--o{ company_members : "user_id"
+  companies ||--o{ company_members : "company_id"
+  companies ||--o{ consents : "target_company_id"
+  users ||--o{ consents : "user_id"
+  users ||--o{ email_tokens : "user_id"
+  companies ||--o{ employer_tasks : "company_id"
+  users ||--o{ employer_tasks : "author_user_id"
+  users ||--o{ external_identities : "user_id"
+  users ||--o{ fsp_ranks : "user_id"
+  users ||--o{ fsp_snapshots : "user_id"
+  companies ||--o{ needs : "company_id"
+  users ||--o{ notifications : "user_id"
+  users ||--o{ oidc_states : "user_id"
+  companies ||--o{ outbox : "company_id"
+  users ||--o{ profile_company_blocks : "user_id"
+  companies ||--o{ profile_company_blocks : "company_id"
+  users ||--o{ sessions : "impersonated_by"
+  users ||--o{ sessions : "user_id"
+  users ||--o{ signals : "user_id"
+  companies ||--o{ signals : "company_id"
+  users ||--o{ skill_results : "user_id"
+  companies ||--o{ webhook_endpoints : "company_id"
+  attempts ||--o{ attempt_items : "attempt_id"
+  users ||--o{ explanations : "user_id"
+  needs ||--o{ explanations : "need_id"
+  fsp_snapshots ||--o{ fsp_results : "snapshot_id"
+  users ||--o{ fsp_results : "user_id"
+  needs ||--o{ group_invites : "need_id"
+  companies ||--o{ group_invites : "company_id"
+  needs ||--o{ selection_snapshots : "need_id"
+  needs ||--o{ shortlist : "need_id"
+  users ||--o{ shortlist : "user_id"
+  employer_tasks ||--o{ task_submissions : "task_id"
+  users ||--o{ task_submissions : "user_id"
+  companies ||--o{ vacancies : "company_id"
+  needs ||--o{ vacancies : "need_id"
+  webhook_endpoints ||--o{ webhook_deliveries : "endpoint_id"
+  outbox ||--o{ webhook_deliveries : "outbox_id"
+  needs ||--o{ contacts : "need_id"
+  users ||--o{ contacts : "user_id"
+  task_submissions ||--o{ contacts : "task_submission_id"
+  companies ||--o{ contacts : "company_id"
+  vacancies ||--o{ contacts : "vacancy_id"
+  group_invites ||--o{ contacts : "group_id"
+  contacts ||--o{ applications : "contact_id"
+  vacancies ||--o{ applications : "vacancy_id"
+  users ||--o{ applications : "user_id"
+  contacts ||--o{ contact_events : "contact_id"
+  contacts ||--o{ helper_uses : "contact_id"
+  companies ||--o{ helper_uses : "company_id"
+  contacts ||--o{ messages : "contact_id"
+  users ||--o{ messages : "author_user_id"
+  users ||--o{ pipeline_stages : "actor_user_id"
+  contacts ||--o{ pipeline_stages : "contact_id"
+  users ||--o{ votes : "user_id"
+  contacts ||--o{ votes : "contact_id"
+  companies ||--o{ votes : "company_id"

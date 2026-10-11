@@ -1,0 +1,28 @@
+# Развёртывание на сервере, где уже работают другие приложения.
+#
+# Отличие от deploy/docker-compose.prod.yml: стек не занимает порты 80 и 443 и не поднимает Caddy.
+# Приложение слушает только localhost, а TLS и домен берёт на себя существующий прокси хоста (nginx, traefik).
+# Так приложение не конфликтует с другими сервисами и не светит наружу ни основной порт, ни почту.
+#
+# Запуск:
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.shared.yml up -d --build --wait
+# Порт приложения из .env (по умолчанию 8080):
+#   APP_PORT=8080
+services:
+  web:
+    # Только 127.0.0.1: 80 и 443 остаются за прокси хоста
+    ports: !override ["127.0.0.1:${APP_PORT:-8080}:8080"]
+    security_opt: ["no-new-privileges:true"]
+  api:
+    security_opt: ["no-new-privileges:true"]
+  worker:
+    security_opt: ["no-new-privileges:true"]
+  db:
+    security_opt: ["no-new-privileges:true"]
+  mailpit:
+    # Почта демонстрационная: ссылка подтверждения приходит в ответе регистрации, отдельный порт не нужен
+    ports: !reset []
+    security_opt: ["no-new-privileges:true"]
+networks:
+  default:
+    name: fsp2026-shared

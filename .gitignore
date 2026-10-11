@@ -1,0 +1,21 @@
+# Материалы организаторов и чужие данные — в публичный репозиторий не попадают
+/ФСП спец. трек ТЗ.pdf
+/ЛЦТ_2026_Шаблон презентации ФСП.pptx
+/ChatExport_*/
+/qa-summary-fsp-2026.md
+
+# Окружение и артефакты
+.env
+*.pyc
+__pycache__/
+.venv/
+node_modules/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Артефакты Playwright MCP
+/.playwright-mcp/
+
+# Генерируемые отчёты конвейера банка
+/reports/bank_check.json

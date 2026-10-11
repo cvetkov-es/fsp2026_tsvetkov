@@ -1,0 +1,22 @@
+# .github/workflows/compose.yml
+name: compose
+on:
+  push: { branches: [main] }
+  pull_request: { paths: ["docker-compose.yml", "backend/Dockerfile", "frontend/Dockerfile", "deploy/**", "backend/migrations/**", "backend/scripts/init_db.py", ".github/workflows/compose.yml"] }
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - run: shellcheck deploy/*.sh
+      - run: cp .env.example .env && sed -i 's/^SECRET_KEY=.*/SECRET_KEY=ci-secret-key-0123456789abcdef/' .env
+      - run: DOMAIN=example.test docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml config -q
+      - run: docker compose up -d --build --wait --wait-timeout 600
+      - run: bash deploy/post-up.sh   # отчёт лаборатории и смоук изнутри — то же, что делает bootstrap.sh на VPS
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install httpx && python deploy/smoke.py http://localhost:8080
+      - if: failure()
+        run: docker compose ps && docker compose logs --tail=200

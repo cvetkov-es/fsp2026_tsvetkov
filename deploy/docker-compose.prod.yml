@@ -1,0 +1,18 @@
+# Поверх docker-compose.yml на VPS: HTTPS через Caddy (сертификат Let's Encrypt — сам), наружу только 80 и 443.
+# Запуск — deploy/bootstrap.sh; вручную: docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build --wait
+services:
+  caddy:
+    image: caddy:2.10-alpine
+    ports: ["80:80", "443:443"]
+    volumes: ["./deploy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data", "caddy_config:/config"]
+    environment: { DOMAIN: "${DOMAIN}" }
+    depends_on: { web: { condition: service_healthy } }
+    restart: unless-stopped
+    mem_limit: 64m
+  web:
+    ports: !reset []  # наружу — только через Caddy
+  mailpit:
+    ports: !reset []  # письма демо-режима наружу не нужны: ссылка подтверждения приходит в ответе регистрации
+volumes:
+  caddy_data:
+  caddy_config:

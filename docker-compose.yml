@@ -1,0 +1,43 @@
+# Проверяется на VPS (план 08); локально Docker не установлен
+services:
+  db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: fsp, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-fsp}", POSTGRES_DB: fsp }  # на VPS пароль — из .env (deploy/bootstrap.sh)
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U fsp"], interval: 5s, retries: 20 }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    restart: unless-stopped
+    mem_limit: 256m
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      FSP_SERVER_BASE: http://api:8000  # серверные вызовы к встроенному моку FSP ID — в свой же процесс
+    depends_on: { db: { condition: service_healthy } }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health', timeout=3)"]
+      interval: 10s
+      retries: 30
+      start_period: 120s  # миграции, банк заданий и засев при первом старте
+    restart: unless-stopped
+    mem_limit: 960m  # 2 воркера uvicorn + подпроцесс NER natasha (~225 МБ RSS)
+  worker:
+    build: ./backend
+    env_file: .env
+    command: ["python", "-m", "app.worker"]
+    depends_on: { db: { condition: service_healthy }, api: { condition: service_healthy } }  # схема — миграциями при старте api
+    restart: unless-stopped
+    mem_limit: 160m  # без NER и PDF: замер ~90 МБ RSS
+  web:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    ports: ["8080:8080"]
+    depends_on: { api: { condition: service_healthy } }
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"], interval: 10s, retries: 10 }  # localhost в alpine — это ::1, а nginx слушает IPv4
+    restart: unless-stopped
+    mem_limit: 64m
+  mailpit:
+    image: axllent/mailpit:v1.31.4
+    ports: ["8025:8025"]
+    restart: unless-stopped
+    mem_limit: 64m
+volumes:
+  pgdata:

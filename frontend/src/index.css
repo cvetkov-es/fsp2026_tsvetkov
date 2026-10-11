@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/* Палитра, шрифты и формы интерфейса */
+@theme {
+  --color-primary: #2b59e8;
+  --color-primary-hover: #1e45c4;
+  --color-primary-soft: #e8eefe;
+  --color-primary-tint: #f4f7ff;
+  --color-primary-line: #c9d5fb;
+  --color-primary-mist: #9aacef;
+  --color-ink: #151821;
+  --color-ink-2: #3a404c;
+  --color-muted: #5b6271;
+  --color-subtle: #6b7180;
+  --color-line: #e3e6ec;
+  --color-line-soft: #eef0f3;
+  --color-line-strong: #d5d9e1;
+  --color-canvas: #f3f4f7;
+  --color-surface-2: #f7f8fa;
+  --color-night-2: #1b1e27;
+  --color-night-3: #1f232d;
+  --color-night-line: #2a2e39;
+  --color-night-muted: #9ba1ad;
+  --color-night-text: #d9dce3;
+  --color-night-accent: #7c9cff;
+  --color-success: #16764c;
+  --color-success-dot: #1f9d66;
+  --color-success-soft: #e3f5ec;
+  --color-success-tint: #f0f8f4;
+  --color-success-line: #cbe9d9;
+  --color-success-ink: #145e3e;
+  --color-danger: #c33a3a;
+  --color-danger-soft: #fdf1f1;
+  --color-danger-line: #f0caca;
+  --color-warning: #8a5300;
+  --color-warning-soft: #fff4e0;
+  --color-signal: #e5484d;
+  --color-code: #e6e8ee;
+
+
+  --font-sans: "Golos Text Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  body { @apply bg-canvas font-sans text-ink antialiased; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--color-primary); }
+  ::selection { background: var(--color-primary-soft); }
+}
